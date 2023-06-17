@@ -136,4 +136,20 @@ class PostController extends Controller
         return new PostResource(true, 'Data berhasil dihapus!', null);
     }
 
+    public function restore($id) {
+
+        // Find post by ID
+        $post = Post::whereNotNull('deleted_at')->find($id);
+
+        if (!$post) return new PostResource(true, 'Data tidak ditemukan!', null);
+
+        // Update post without image
+        $post->update([
+            'deleted_at' => null
+        ]);
+
+        // Return response
+        return new PostResource(true, 'Data berhasil dikembalikan!', null);
+    }
+
 }
