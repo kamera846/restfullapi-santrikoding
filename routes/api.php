@@ -22,3 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Posts
 Route::apiResource('/posts', PostController::class);
+
+Route::post('/posts/{id}', [PostController::class, 'destroy']);

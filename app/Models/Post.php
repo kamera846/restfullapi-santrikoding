@@ -11,7 +11,7 @@ class Post extends Model
     use HasFactory;
 
     protected $fillable = [
-        'image', 'title', 'content'
+        'image', 'title', 'content', 'deleted_at'
     ];
 
     protected function image(): Attribute {

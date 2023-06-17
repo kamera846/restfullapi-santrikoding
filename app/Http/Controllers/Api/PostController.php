@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Validator;
 class PostController extends Controller
 {
     public function index() {
-        $posts = Post::latest()->paginate(5);
+        $posts = Post::whereNull('deleted_at')->latest()->paginate(5);
 
         return new PostResource(true, 'List Data Posts', $posts);
     }
@@ -57,7 +57,7 @@ class PostController extends Controller
 
     public function show($id) {
         // Find post by ID
-        $post = Post::find($id);
+        $post = Post::whereNull('deleted_at')->find($id);
 
         if (!$post) return new PostResource(true, 'Data tidak ditemukan!', null);
 
@@ -105,18 +105,32 @@ class PostController extends Controller
         return new PostResource(true, 'Data berhasil diubah!', $post);
     }
 
-    public function destroy($id) {
+    public function destroy(Request $request, $id) {
 
         // Find post by ID
         $post = Post::find($id);
 
         if (!$post) return new PostResource(true, 'Data tidak ditemukan!', null);
 
-        // Delete image
-        Storage::delete('public/posts/' . basename($post->image));
 
-        // Delete post
-        $post->delete();
+        // Soft Delete
+        if ($request->method() === 'POST') {
+
+            // Update post without image
+            $post->update([
+                'deleted_at' => date('Y-m-d H:i:s')
+            ]);
+
+        // Permanently Delete
+        } else {
+
+            // Delete image
+            Storage::delete('public/posts/' . basename($post->image));
+
+            // Delete post
+            $post->delete();
+
+        }
 
         // Return response
         return new PostResource(true, 'Data berhasil dihapus!', null);
