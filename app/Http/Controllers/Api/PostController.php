@@ -105,4 +105,21 @@ class PostController extends Controller
         return new PostResource(true, 'Data berhasil diubah!', $post);
     }
 
+    public function destroy($id) {
+
+        // Find post by ID
+        $post = Post::find($id);
+
+        if (!$post) return new PostResource(true, 'Data tidak ditemukan!', null);
+
+        // Delete image
+        Storage::delete('public/posts/' . basename($post->image));
+
+        // Delete post
+        $post->delete();
+
+        // Return response
+        return new PostResource(true, 'Data berhasil dihapus!', null);
+    }
+
 }
